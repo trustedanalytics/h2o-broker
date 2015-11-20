@@ -1,0 +1,30 @@
+security:
+#password cf client will use when interacting with broker
+  user.password: ${USER_PASSWORD:abc}
+
+zookeeper:
+  metadataNode: /metadata
+  credentialsNode: /credentials
+
+h2o:
+  provisioner:
+    url: ${vcap.services.h2o-provisioner.credentials.url}
+    memory: ${MAPPER_MEMORY:512m}
+    nodes: ${MAPPER_NODES:1}
+
+yarn.config: ${hadoop.provided.params:{}}
+
+cf:
+  #name of service in cloud foundry catalog
+  servicename: ${cf.catalog.servicename:h2o}
+  #id of service in cloud foundry catalog
+  serviceid: ${cf.catalog.serviceid:h2o}
+  baseid: ${BASE_GUID:}
+
+metadata:
+  imageUrl: ${IMAGE_URL:}
+
+logging:
+  level:
+    water: DEBUG
+    org.trustedanalytics: INFO

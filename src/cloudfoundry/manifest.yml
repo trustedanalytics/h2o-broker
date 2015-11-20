@@ -1,0 +1,20 @@
+---
+applications:
+- name: h2o-broker
+  memory: 512m
+  instances: 1
+  host: h2o-broker
+  path: target/h2o-broker-${version}.jar
+  services:
+  #TODO: bind it to yarn instance after solving "dollar issue" in yarn-broker
+  #- yarn-for-h2o-broker
+  - zookeeper-for-h2o-broker
+  - h2o-provisioner
+  - kerberos-service
+  env:
+    BASE_GUID: placeholder
+    HADOOP_PROVIDED_PARAMS: placeholder #TODO: after solving "dollar issue" in yarn-broker this var will be useless
+    SPRING_PROFILES_ACTIVE: "cloud"
+    USER_PASSWORD: placeholder
+    VERSION: ${version}
+

@@ -1,0 +1,23 @@
+broker.store:
+  node: /test_node
+  cluster: fakeZkCluster
+
+zookeeper:
+  metadataNode: /metadata
+  credentialsNode: /credentials
+
+h2o:
+  provisioner:
+    url: fakeUrl
+    memory: fakeMemory
+    nodes: fakeNodes
+
+yarn.config: '{"HADOOP_CONFIG_KEY":{}}'
+
+cf:
+  servicename: fakeName
+  serviceid: fakeId
+  baseid: fakeBaseId
+
+metadata:
+  imageUrl: fakeImg
