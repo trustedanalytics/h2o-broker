@@ -72,20 +72,22 @@ public class H2oServiceInstanceService extends ForwardingServiceInstanceServiceS
         public void run() {
             try {
                 H2oCredentials credentials = h2oProvisioner.provisionInstance(instanceId);
-
-                try {
-                    credentialsStore.save(Location.newInstance(instanceId), credentials);
-                } catch (IOException e) {
-                    logError(e);
-
-                    //TODO: this (exception muting) will change after upgrading
-                    // to 2.7 Broker API which can deal with creating instances asynchronously
-
-                }
+                saveCredentials(credentials);
                 LOGGER.info("Created h2o instance with address '"
                     + credentials.getHostname() + ":" + credentials.getPort() + "'");
 
             } catch (ServiceBrokerException e) {
+                logError(e);
+
+                //TODO: this (exception muting) will change after upgrading
+                // to 2.7 Broker API which can deal with creating instances asynchronously
+            }
+        }
+
+        private void saveCredentials(H2oCredentials credentials) {
+            try {
+                credentialsStore.save(Location.newInstance(instanceId), credentials);
+            } catch (IOException e) {
                 logError(e);
 
                 //TODO: this (exception muting) will change after upgrading
