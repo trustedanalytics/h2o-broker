@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>h2o-broker</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 
     <parent>
         <groupId>org.trustedanalytics</groupId>
@@ -13,8 +13,8 @@
     </parent>
 
     <properties>
-        <brokerVersion>2.4.2</brokerVersion>
-        <brokerTestVersion>2.4.1</brokerTestVersion>
+        <brokerVersion>2.6.0</brokerVersion>
+        <brokerTestVersion>2.6.0</brokerTestVersion>
         <start-class>org.trustedanalytics.servicebroker.h2o.Application</start-class>
         <jacoco-measurement-instructions>0.4709</jacoco-measurement-instructions>
         <jacoco-measurement-branches>0.0434</jacoco-measurement-branches>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>org.trustedanalytics.servicebroker.repository</groupId>
             <artifactId>zookeeper-broker-store</artifactId>
-            <version>0.4.1</version>
+            <version>0.5.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
