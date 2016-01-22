@@ -43,13 +43,13 @@ public class CatalogConfig {
         final String DESCRIPTION = "A simple h2o broker";
         final boolean BINDABLE = true;
         final boolean UPDATEABLE = true;
-        final List<String> NO_TAGS = null;
+        final List<String> TAGS = Arrays.asList("data-science-tool");
         final String SYSLOG_DRAIN = "syslog_drain";
         final DashboardClient NO_DASHBOARD = null;
 
         return new Catalog(Arrays.asList(
             new ServiceDefinition(SERVICE_ID, SERVICE_NAME, DESCRIPTION, BINDABLE, UPDATEABLE,
-                getSharedPlans(), NO_TAGS, getServiceDefinitionMetadata(),
+                getSharedPlans(), TAGS, getServiceDefinitionMetadata(),
                 Arrays.asList(SYSLOG_DRAIN), NO_DASHBOARD)));
     }
 
