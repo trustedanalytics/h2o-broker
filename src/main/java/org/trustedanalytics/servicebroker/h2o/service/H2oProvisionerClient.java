@@ -42,6 +42,9 @@ public class H2oProvisionerClient implements H2oProvisioner {
         this.nodesCount = nodesCount;
         this.yarnConf = yarnConf;
         this.h2oRest = h2oRest;
+
+        LOGGER.info("YARN CONFIG");
+        yarnConf.forEach((k,v) -> LOGGER.info(k + ": " + v));
     }
 
     @Override public H2oCredentials provisionInstance(String serviceInstanceId)

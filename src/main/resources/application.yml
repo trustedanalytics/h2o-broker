@@ -12,7 +12,7 @@ h2o:
     memory: ${MAPPER_MEMORY:512m}
     nodes: ${MAPPER_NODES:1}
 
-yarn.config: ${hadoop.provided.params:{}}
+yarn.config: ${VCAP_SERVICES}
 
 cf:
   #name of service in cloud foundry catalog

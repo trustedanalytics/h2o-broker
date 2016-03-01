@@ -58,14 +58,7 @@ public class ServiceInstanceServiceConfig {
 
     private Map<String, String> getYarnConf(ExternalConfiguration config) throws IOException {
         ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
-        return confHelper.getConfigurationFromJson(
-
-            //            System.getenv("VCAP_SERVICES"),
-
-            //TODO: bind it to yarn instance after solving "dollar issue" in yarn-broker
-            config.getYarnConfig(),
-
-            ConfigurationLocator.HADOOP);
+        return  confHelper.getConfigurationFromJson(config.getYarnConfig(), ConfigurationLocator.HADOOP);
     }
 
     @Bean

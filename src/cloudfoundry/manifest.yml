@@ -6,14 +6,12 @@ applications:
   host: h2o-broker
   path: target/h2o-broker-${version}.jar
   services:
-  #TODO: bind it to yarn instance after solving "dollar issue" in yarn-broker
-  #- yarn-for-h2o-broker
+  - yarn-for-h2o-broker
   - zookeeper-for-h2o-broker
   - h2o-provisioner
   - kerberos-service
   env:
-    BASE_GUID: placeholder
-    HADOOP_PROVIDED_PARAMS: placeholder #TODO: after solving "dollar issue" in yarn-broker this var will be useless
+    BASE_GUID: ccf1900f-62e6-4956-a03d-f6387293a5a8
     SPRING_PROFILES_ACTIVE: "cloud"
     USER_PASSWORD: placeholder
     VERSION: ${version}
