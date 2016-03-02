@@ -65,4 +65,9 @@ public class TestConfig {
     public H2oProvisionerRestApi h2oProvisionerRestApi() {
         return mock(H2oProvisionerRestApi.class);
     }
+
+    @Bean
+    public boolean isKerberosEnabled(){
+        return true;
+    }
 }

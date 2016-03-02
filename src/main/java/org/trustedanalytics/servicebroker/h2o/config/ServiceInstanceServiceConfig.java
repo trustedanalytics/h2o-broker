@@ -50,10 +50,10 @@ public class ServiceInstanceServiceConfig {
 
     @Bean
     public H2oProvisioner h2oProvisioner(ExternalConfiguration config,
-        H2oProvisionerRestApi h2oProvisionerRestApi) throws IOException {
+        H2oProvisionerRestApi h2oProvisionerRestApi, boolean isKerberosEnabled) throws IOException {
 
         return new H2oProvisionerClient(config.getH2oMapperMemory(), config.getH2oMapperNodes(),
-            getYarnConf(config), h2oProvisionerRestApi);
+            isKerberosEnabled, getYarnConf(config), h2oProvisionerRestApi);
     }
 
     private Map<String, String> getYarnConf(ExternalConfiguration config) throws IOException {

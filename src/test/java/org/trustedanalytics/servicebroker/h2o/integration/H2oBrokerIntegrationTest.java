@@ -87,8 +87,7 @@ public class H2oBrokerIntegrationTest {
     @Before
     public void setup() throws IOException {
         ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
-        yarnConfig =
-            confHelper.getConfigurationFromJson(conf.getYarnConfig(), ConfigurationLocator.HADOOP);
+        yarnConfig = confHelper.getConfigurationFromJson(conf.getYarnConfig(), ConfigurationLocator.HADOOP);
     }
 
     @Test
@@ -98,8 +97,7 @@ public class H2oBrokerIntegrationTest {
         //arrange
         final String INSTANCE_ID = "instanceId0";
         when(h2oProvisionerRestApi
-            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(),
-                yarnConfig))
+            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(), true, yarnConfig))
             .thenReturn(new ResponseEntity<>(CREDENTIALS, HttpStatus.OK));
 
         //act
@@ -114,7 +112,7 @@ public class H2oBrokerIntegrationTest {
             equalTo(CREDENTIALS));
 
         verify(h2oProvisionerRestApi, times(1))
-            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(),
+            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(), true,
                 yarnConfig);
     }
 
@@ -123,8 +121,7 @@ public class H2oBrokerIntegrationTest {
         //arrange
         final String INSTANCE_ID = "instanceId1";
         when(h2oProvisionerRestApi
-            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(),
-                yarnConfig))
+            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(), true, yarnConfig))
             .thenReturn(new ResponseEntity<>(CREDENTIALS, HttpStatus.OK));
         ServiceInstance instance =
             instanceService.createServiceInstance(
@@ -148,8 +145,7 @@ public class H2oBrokerIntegrationTest {
         final String INSTANCE_ID = "instanceId2";
         final String BINDING_ID = "bindingId2";
         when(h2oProvisionerRestApi
-            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(),
-                yarnConfig))
+            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(), true, yarnConfig))
             .thenReturn(new ResponseEntity<>(CREDENTIALS, HttpStatus.OK));
         instanceService.createServiceInstance(
             CfBrokerRequestsFactory.getCreateInstanceRequest(INSTANCE_ID));
@@ -177,8 +173,7 @@ public class H2oBrokerIntegrationTest {
         final String INSTANCE_ID = "instanceId3";
         final String BINDING_ID = "bindingId3";
         when(h2oProvisionerRestApi
-            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(),
-                yarnConfig))
+            .createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(), conf.getH2oMapperMemory(), true, yarnConfig))
             .thenReturn(new ResponseEntity<>(CREDENTIALS, HttpStatus.OK));
 
         CreateServiceInstanceRequest createInstanceReq =

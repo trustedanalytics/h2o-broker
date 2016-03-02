@@ -40,9 +40,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class H2oProvisionerClientTest {
 
-    private static final String H2O_PROVISIONER_URL = "http://h2o.provisioner.com";
     private static final String H2O_MEMORY = "h2oMemory";
     private static final String H2O_NODES = "h2oNodes";
+    private static final boolean KERBEROS = true;
     private static final String INSTANCE_ID = "instanceId";
     private static final Map<String, String> YARN_CONF =
         ImmutableMap.of("key1", "value1", "key2", "value2");
@@ -54,7 +54,7 @@ public class H2oProvisionerClientTest {
 
     @Before
     public void setup() {
-        h2oProvisioner = new H2oProvisionerClient(H2O_MEMORY, H2O_NODES, YARN_CONF, h2oRestMock);
+        h2oProvisioner = new H2oProvisionerClient(H2O_MEMORY, H2O_NODES, KERBEROS, YARN_CONF, h2oRestMock);
     }
 
     @Rule
@@ -66,7 +66,7 @@ public class H2oProvisionerClientTest {
 
         //arrange
         H2oCredentials expectedCredentials = new H2oCredentials("a", "b", "c", "d");
-        when(h2oRestMock.createH2oInstance(INSTANCE_ID, H2O_NODES, H2O_MEMORY, YARN_CONF))
+        when(h2oRestMock.createH2oInstance(INSTANCE_ID, H2O_NODES, H2O_MEMORY, KERBEROS, YARN_CONF))
             .thenReturn(new ResponseEntity<>(expectedCredentials, HttpStatus.OK));
 
         //act
@@ -81,7 +81,7 @@ public class H2oProvisionerClientTest {
         //arrange
         expectedException.expect(ServiceBrokerException.class);
         expectedException.expectMessage("Unable to provision h2o for: " + INSTANCE_ID);
-        when(h2oRestMock.createH2oInstance(INSTANCE_ID, H2O_NODES, H2O_MEMORY, YARN_CONF))
+        when(h2oRestMock.createH2oInstance(INSTANCE_ID, H2O_NODES, H2O_MEMORY, KERBEROS, YARN_CONF))
             .thenReturn(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 
         //act
@@ -94,7 +94,7 @@ public class H2oProvisionerClientTest {
         //arrange
         expectedException.expect(ServiceBrokerException.class);
         expectedException.expectMessage("Unable to provision h2o for: " + INSTANCE_ID);
-        when(h2oRestMock.createH2oInstance(INSTANCE_ID, H2O_NODES, H2O_MEMORY, YARN_CONF))
+        when(h2oRestMock.createH2oInstance(INSTANCE_ID, H2O_NODES, H2O_MEMORY, KERBEROS, YARN_CONF))
             .thenThrow(new RestClientException(""));
 
         //act

@@ -33,13 +33,15 @@ public class H2oProvisionerClient implements H2oProvisioner {
 
     private final String memory;
     private final String nodesCount;
+    private final boolean kerberos;
     private final Map<String, String> yarnConf;
     private final H2oProvisionerRestApi h2oRest;
 
-    public H2oProvisionerClient(String memory, String nodesCount, Map<String, String> yarnConf,
+    public H2oProvisionerClient(String memory, String nodesCount, boolean kerberos, Map<String, String> yarnConf,
         H2oProvisionerRestApi h2oRest) {
         this.memory = memory;
         this.nodesCount = nodesCount;
+        this.kerberos = kerberos;
         this.yarnConf = yarnConf;
         this.h2oRest = h2oRest;
 
@@ -53,7 +55,7 @@ public class H2oProvisionerClient implements H2oProvisioner {
         ResponseEntity<H2oCredentials> h2oCredentialsResponseEntity;
         try {
             h2oCredentialsResponseEntity = h2oRest.createH2oInstance(
-                serviceInstanceId, nodesCount, memory, yarnConf);
+                serviceInstanceId, nodesCount, memory, kerberos, yarnConf);
             LOGGER.info("response: '" + h2oCredentialsResponseEntity.getStatusCode() + "'");
         } catch (RestClientException e) {
             throw new ServiceBrokerException(errorMsg(serviceInstanceId), e);
