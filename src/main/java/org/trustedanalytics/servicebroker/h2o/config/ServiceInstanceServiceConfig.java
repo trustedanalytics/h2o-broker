@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2015 Intel Corporation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package org.trustedanalytics.servicebroker.h2o.config;
@@ -40,30 +38,30 @@ import java.util.Map;
 @Configuration
 public class ServiceInstanceServiceConfig {
 
-    @Bean
-    public ServiceInstanceService getServiceInstanceService(
-        BrokerStore<ServiceInstance> serviceInstanceStore, H2oProvisioner h2oProvisioner,
-        BrokerStore<H2oCredentials> credentialsStore) {
-        return new H2oServiceInstanceService(new ServiceInstanceServiceStore(serviceInstanceStore),
-            h2oProvisioner, credentialsStore);
-    }
+  @Bean
+  public ServiceInstanceService getServiceInstanceService(
+      BrokerStore<ServiceInstance> serviceInstanceStore, H2oProvisioner h2oProvisioner,
+      BrokerStore<H2oCredentials> credentialsStore) {
+    return new H2oServiceInstanceService(new ServiceInstanceServiceStore(serviceInstanceStore),
+        h2oProvisioner, credentialsStore);
+  }
 
-    @Bean
-    public H2oProvisioner h2oProvisioner(ExternalConfiguration config,
-        H2oProvisionerRestApi h2oProvisionerRestApi, boolean isKerberosEnabled) throws IOException {
+  @Bean
+  public H2oProvisioner h2oProvisioner(ExternalConfiguration config,
+      H2oProvisionerRestApi h2oProvisionerRestApi, boolean isKerberosEnabled) throws IOException {
 
-        return new H2oProvisionerClient(config.getH2oMapperMemory(), config.getH2oMapperNodes(),
-            isKerberosEnabled, getYarnConf(config), h2oProvisionerRestApi);
-    }
+    return new H2oProvisionerClient(config.getH2oMapperMemory(), config.getH2oMapperNodes(),
+        isKerberosEnabled, getYarnConf(config), h2oProvisionerRestApi);
+  }
 
-    private Map<String, String> getYarnConf(ExternalConfiguration config) throws IOException {
-        ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
-        return  confHelper.getConfigurationFromJson(config.getYarnConfig(), ConfigurationLocator.HADOOP);
-    }
+  private Map<String, String> getYarnConf(ExternalConfiguration config) throws IOException {
+    ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
+    return confHelper.getConfigurationFromJson(config.getYarnConfig(), ConfigurationLocator.HADOOP);
+  }
 
-    @Bean
-    @Profile({"cloud", "default"})
-    public H2oProvisionerRestApi h2oProvisionerRestApi(ExternalConfiguration config) {
-        return new H2oProvisionerRestClient(config.getH2oProvisionerUrl(), new RestTemplate());
-    }
+  @Bean
+  @Profile({"cloud", "default"})
+  public H2oProvisionerRestApi h2oProvisionerRestApi(ExternalConfiguration config) {
+    return new H2oProvisionerRestClient(config.getH2oProvisionerUrl(), new RestTemplate());
+  }
 }
