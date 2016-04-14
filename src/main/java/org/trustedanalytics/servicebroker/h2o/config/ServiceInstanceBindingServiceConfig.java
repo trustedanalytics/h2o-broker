@@ -32,8 +32,7 @@ public class ServiceInstanceBindingServiceConfig {
   @Bean
   public ServiceInstanceBindingService getServiceInstanceBindingService(
       BrokerStore<CreateServiceInstanceBindingRequest> serviceBindingStore,
-      BrokerStore<H2oCredentials> credentialsStore)
-      throws IllegalArgumentException, IOException, LoginException {
+      BrokerStore<H2oCredentials> credentialsStore) {
 
     return new H2oServiceInstanceBindingService(
         new ServiceInstanceBindingServiceStore(serviceBindingStore), credentialsStore);
