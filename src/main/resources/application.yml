@@ -1,6 +1,6 @@
 security:
 #password cf client will use when interacting with broker
-  user.password: ${USER_PASSWORD:abc}
+  user.password: ${USER_PASSWORD:}
 
 zookeeper:
   metadataNode: /metadata

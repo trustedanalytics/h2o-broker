@@ -20,4 +20,4 @@ cf:
   baseid: fakeBaseId
 
 metadata:
-  imageUrl: fakeImg
+  imageUrl: ${IMAGE_URL:}
