@@ -23,9 +23,6 @@ import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceBindingServiceSto
 import org.trustedanalytics.servicebroker.h2o.service.H2oServiceInstanceBindingService;
 import org.trustedanalytics.servicebroker.h2oprovisioner.rest.api.H2oCredentials;
 
-import javax.security.auth.login.LoginException;
-import java.io.IOException;
-
 @Configuration
 public class ServiceInstanceBindingServiceConfig {
 
