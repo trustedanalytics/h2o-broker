@@ -1,3 +1,5 @@
+[![Dependency Status](https://www.versioneye.com/user/projects/5723677aba37ce00464e0496/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5723677aba37ce00464e0496)
+
 # h2o-broker
 Cloud foundry broker for h2o. It spawns h2o instances on yarn.
 
