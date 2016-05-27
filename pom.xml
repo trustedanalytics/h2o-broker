@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>h2o-broker</artifactId>
-    <version>0.4.9</version>
+    <version>0.4.10</version>
 
     <parent>
         <groupId>org.trustedanalytics</groupId>
         <artifactId>spring-project-template</artifactId>
-        <version>0.4.3</version>
+        <version>0.5.0</version>
     </parent>
 
     <properties>
@@ -75,16 +75,11 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <headerDefinitions>
-                        <headerDefinition>license/regex_header_pattern.xml</headerDefinition>
-                    </headerDefinitions>
-                    <header>license/license_header.txt</header>
                     <includes>
                         <include>src/**/*.java</include>
                     </includes>
-
                     <mapping>
-                        <java>regex_header_pattern_style</java>
+                        <java>JAVADOC_STYLE</java>
                     </mapping>
                 </configuration>
                 <executions>
