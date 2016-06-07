@@ -66,7 +66,25 @@ public class H2oProvisionerClient implements H2oProvisioner {
     }
   }
 
+  @Override
+  public String deprovisionInstance(String serviceInstanceId) throws ServiceBrokerException {
+    ResponseEntity<String> deleteH2oInstanceResponse;
+    try {
+      deleteH2oInstanceResponse = h2oRest.deleteH2oInstance(serviceInstanceId, yarnConf);
+      LOGGER.info("response: '" + deleteH2oInstanceResponse.getStatusCode() + "'");
+    } catch (RestClientException e) {
+      throw new ServiceBrokerException("Unable to deprovision h2o for: " + serviceInstanceId, e);
+    }
+
+    if (deleteH2oInstanceResponse.getStatusCode() == HttpStatus.OK) {
+      return deleteH2oInstanceResponse.getBody();
+    } else {
+      throw new ServiceBrokerException("Unable to deprovision h2o for: " + serviceInstanceId);
+    }
+  }
+
   private String errorMsg(String serviceInstanceId) {
     return "Unable to provision h2o for: " + serviceInstanceId;
   }
+
 }

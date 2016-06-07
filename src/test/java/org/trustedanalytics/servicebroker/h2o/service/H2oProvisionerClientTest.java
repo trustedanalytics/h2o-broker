@@ -98,4 +98,43 @@ public class H2oProvisionerClientTest {
     // act
     h2oProvisioner.provisionInstance(INSTANCE_ID);
   }
+
+  @Test
+  public void deprovisionInstance_provisionerEndsWith200_jobIdReturned() throws Exception {
+    // arrange
+    String expectedJobId = "0295513498943";
+    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF))
+        .thenReturn(new ResponseEntity<>(expectedJobId, HttpStatus.OK));
+
+    // act
+    String actualJobId = h2oProvisioner.deprovisionInstance(INSTANCE_ID);
+
+    // assert
+    assertThat(actualJobId, equalTo(expectedJobId));
+  }
+
+  @Test
+  public void deprovisionInstance_provisionerEndsWith500_exceptionThrown() throws Exception {
+    // arrange
+    expectedException.expect(ServiceBrokerException.class);
+    expectedException.expectMessage("Unable to deprovision h2o for: " + INSTANCE_ID);
+    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF))
+        .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+
+    // act
+    h2oProvisioner.deprovisionInstance(INSTANCE_ID);
+  }
+
+  @Test
+  public void deprovisionInstance_provisionerEndsWithException_exceptionThrown() throws Exception {
+    // arrange
+    expectedException.expect(ServiceBrokerException.class);
+    expectedException.expectMessage("Unable to deprovision h2o for: " + INSTANCE_ID);
+    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF))
+        .thenThrow(new RestClientException(""));
+
+    // act
+    h2oProvisioner.deprovisionInstance(INSTANCE_ID);
+  }
 }
+

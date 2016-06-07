@@ -19,4 +19,6 @@ import org.trustedanalytics.servicebroker.h2oprovisioner.rest.api.H2oCredentials
 
 public interface H2oProvisioner {
   H2oCredentials provisionInstance(String serviceInstanceId) throws ServiceBrokerException;
+  String deprovisionInstance(String serviceInstanceId) throws ServiceBrokerException;
 }
+
