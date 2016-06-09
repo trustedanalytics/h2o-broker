@@ -17,6 +17,7 @@ package org.trustedanalytics.servicebroker.h2o.service;
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceRequest;
+import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceRequest;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import java.io.IOException;
 
 public class H2oServiceInstanceService extends ForwardingServiceInstanceServiceStore {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(H2oServiceInstanceService.class);
   private final H2oProvisioner h2oProvisioner;
   private final BrokerStore<H2oCredentials> credentialsStore;
 
@@ -49,6 +51,18 @@ public class H2oServiceInstanceService extends ForwardingServiceInstanceServiceS
 
     new Thread(new ProvisioningJob(h2oProvisioner, credentialsStore, instanceId)).start();
 
+    return serviceInstance;
+  }
+
+  @Override
+  public ServiceInstance deleteServiceInstance(DeleteServiceInstanceRequest request)
+      throws ServiceBrokerException {
+    ServiceInstance serviceInstance = super.deleteServiceInstance(request);
+    String serviceInstanceId = serviceInstance.getServiceInstanceId();
+
+    String killedJob = h2oProvisioner.deprovisionInstance(serviceInstanceId);
+    LOGGER.info("Killed YARN job: " + killedJob + " for H2O instance " + serviceInstanceId
+        + ". H2O deleted.");
     return serviceInstance;
   }
 

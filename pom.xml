@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>h2o-broker</artifactId>
-    <version>0.4.11</version>
+    <version>0.4.12</version>
 
     <parent>
         <groupId>org.trustedanalytics</groupId>
@@ -16,10 +16,10 @@
         <brokerVersion>2.6.0</brokerVersion>
         <brokerTestVersion>2.6.0</brokerTestVersion>
         <start-class>org.trustedanalytics.servicebroker.h2o.Application</start-class>
-        <jacoco-measurement-instructions>0.4709</jacoco-measurement-instructions>
-        <jacoco-measurement-branches>0.0434</jacoco-measurement-branches>
-        <jacoco-measurement-lines>0.7219</jacoco-measurement-lines>
-        <jacoco-measurement-classes>0.8823</jacoco-measurement-classes>
+        <jacoco-measurement-instructions>0.780</jacoco-measurement-instructions>
+        <jacoco-measurement-branches>0.870</jacoco-measurement-branches>
+        <jacoco-measurement-lines>0.820</jacoco-measurement-lines>
+        <jacoco-measurement-classes>0.900</jacoco-measurement-classes>
     </properties>
     <scm>
         <connection>scm:git:git@h2o-broker:trustedanalytics/h2o-broker.git</connection>
@@ -45,7 +45,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -73,7 +73,7 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.11</version>
                 <configuration>
                     <includes>
                         <include>src/**/*.java</include>
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>org.trustedanalytics.servicebroker.repository</groupId>
             <artifactId>zookeeper-broker-store</artifactId>
-            <version>0.5.1</version>
+            <version>0.6.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -148,12 +148,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>14.0</version>
+            <version>19.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.6</version>
+            <version>1.16.8</version>
             <scope>provided</scope>
         </dependency>
 
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>org.trustedanalytics</groupId>
             <artifactId>h2o-provisioner</artifactId>
-            <version>0.5.0</version>
+            <version>0.5.7</version>
             <classifier>api</classifier>
         </dependency>
 
@@ -208,7 +208,7 @@
         <dependency>
             <groupId>com.jayway.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>1.6.5</version>
+            <version>1.7.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
