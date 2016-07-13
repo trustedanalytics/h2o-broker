@@ -103,7 +103,7 @@ public class H2oProvisionerClientTest {
   public void deprovisionInstance_provisionerEndsWith200_jobIdReturned() throws Exception {
     // arrange
     String expectedJobId = "0295513498943";
-    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF))
+    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF, true))
         .thenReturn(new ResponseEntity<>(expectedJobId, HttpStatus.OK));
 
     // act
@@ -118,7 +118,7 @@ public class H2oProvisionerClientTest {
     // arrange
     expectedException.expect(ServiceBrokerException.class);
     expectedException.expectMessage("Unable to deprovision h2o for: " + INSTANCE_ID);
-    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF))
+    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF, true))
         .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
     // act
@@ -130,7 +130,7 @@ public class H2oProvisionerClientTest {
     // arrange
     expectedException.expect(ServiceBrokerException.class);
     expectedException.expectMessage("Unable to deprovision h2o for: " + INSTANCE_ID);
-    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF))
+    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF, true))
         .thenThrow(new RestClientException(""));
 
     // act

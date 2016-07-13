@@ -70,7 +70,7 @@ public class H2oProvisionerClient implements H2oProvisioner {
   public String deprovisionInstance(String serviceInstanceId) throws ServiceBrokerException {
     ResponseEntity<String> deleteH2oInstanceResponse;
     try {
-      deleteH2oInstanceResponse = h2oRest.deleteH2oInstance(serviceInstanceId, yarnConf);
+      deleteH2oInstanceResponse = h2oRest.deleteH2oInstance(serviceInstanceId, yarnConf, kerberos);
       LOGGER.info("response: '" + deleteH2oInstanceResponse.getStatusCode() + "'");
     } catch (RestClientException e) {
       throw new ServiceBrokerException("Unable to deprovision h2o for: " + serviceInstanceId, e);
