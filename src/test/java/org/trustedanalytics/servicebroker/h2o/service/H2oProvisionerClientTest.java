@@ -114,6 +114,20 @@ public class H2oProvisionerClientTest {
   }
 
   @Test
+  public void deprovisionInstance_provisionerEndsWith410_messageReturned() throws Exception {
+    // arrange
+    String expectedMessage = "some message";
+    when(h2oRestMock.deleteH2oInstance(INSTANCE_ID, YARN_CONF, true))
+            .thenReturn(new ResponseEntity<>(expectedMessage, HttpStatus.GONE));
+
+    // act
+    String actualMessage = h2oProvisioner.deprovisionInstance(INSTANCE_ID);
+
+    // assert
+    assertThat(actualMessage, equalTo(expectedMessage));
+  }
+
+  @Test
   public void deprovisionInstance_provisionerEndsWith500_exceptionThrown() throws Exception {
     // arrange
     expectedException.expect(ServiceBrokerException.class);

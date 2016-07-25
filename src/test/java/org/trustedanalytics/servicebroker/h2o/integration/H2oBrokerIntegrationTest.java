@@ -53,6 +53,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.reset;
 import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 
 
@@ -84,6 +85,7 @@ public class H2oBrokerIntegrationTest {
   @Before
   public void setup() throws IOException {
     ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
+    reset(h2oProvisionerRestApi);
     yarnConfig =
         confHelper.getConfigurationFromJson(conf.getYarnConfig(), ConfigurationLocator.HADOOP);
   }
@@ -124,6 +126,28 @@ public class H2oBrokerIntegrationTest {
         .thenReturn(new ResponseEntity<>("test-job-id", HttpStatus.OK));
     ServiceInstance instance = instanceService
         .createServiceInstance(CfBrokerRequestsFactory.getCreateInstanceRequest(INSTANCE_ID));
+
+    // act
+    ServiceInstance removedInstance = instanceService
+        .deleteServiceInstance(new DeleteServiceInstanceRequest(instance.getServiceInstanceId(),
+            instance.getServiceDefinitionId(), instance.getPlanId()));
+
+    // assert
+    verify(h2oProvisionerRestApi, times(1)).deleteH2oInstance(INSTANCE_ID, yarnConfig, true);
+    assertThat(instance.getServiceInstanceId(), equalTo(removedInstance.getServiceInstanceId()));
+  }
+
+  @Test
+  public void testDeleteServiceInstance_withoutYarnJob_ShouldReturnRemovedInstance() throws Exception {
+    // arrange
+    final String INSTANCE_ID = "instanceId1";
+    when(h2oProvisionerRestApi.createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(),
+            conf.getH2oMapperMemory(), true, yarnConfig))
+            .thenReturn(new ResponseEntity<>(CREDENTIALS, HttpStatus.OK));
+    when(h2oProvisionerRestApi.deleteH2oInstance(INSTANCE_ID, yarnConfig, true))
+            .thenReturn(new ResponseEntity<>("Some kind of warning...", HttpStatus.GONE));
+    ServiceInstance instance = instanceService
+            .createServiceInstance(CfBrokerRequestsFactory.getCreateInstanceRequest(INSTANCE_ID));
 
     // act
     ServiceInstance removedInstance = instanceService

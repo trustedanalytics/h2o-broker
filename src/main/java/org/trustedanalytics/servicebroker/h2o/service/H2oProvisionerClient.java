@@ -76,7 +76,8 @@ public class H2oProvisionerClient implements H2oProvisioner {
       throw new ServiceBrokerException("Unable to deprovision h2o for: " + serviceInstanceId, e);
     }
 
-    if (deleteH2oInstanceResponse.getStatusCode() == HttpStatus.OK) {
+    HttpStatus receivedStatus = deleteH2oInstanceResponse.getStatusCode();
+    if (receivedStatus == HttpStatus.OK || receivedStatus == HttpStatus.GONE) {
       return deleteH2oInstanceResponse.getBody();
     } else {
       throw new ServiceBrokerException("Unable to deprovision h2o for: " + serviceInstanceId);

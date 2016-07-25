@@ -61,8 +61,7 @@ public class H2oServiceInstanceService extends ForwardingServiceInstanceServiceS
     String serviceInstanceId = serviceInstance.getServiceInstanceId();
 
     String killedJob = h2oProvisioner.deprovisionInstance(serviceInstanceId);
-    LOGGER.info("Killed YARN job: " + killedJob + " for H2O instance " + serviceInstanceId
-        + ". H2O deleted.");
+    LOGGER.info("Killed YARN job: " + killedJob + " for H2O instance " + serviceInstanceId);
     return serviceInstance;
   }
 

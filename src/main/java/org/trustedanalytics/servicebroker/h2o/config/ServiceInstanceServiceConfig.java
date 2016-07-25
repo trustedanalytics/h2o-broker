@@ -19,6 +19,9 @@ import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.trustedanalytics.cfbroker.store.api.BrokerStore;
 import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceServiceStore;
@@ -60,8 +63,27 @@ public class ServiceInstanceServiceConfig {
   }
 
   @Bean
+  public ResponseErrorHandler responseHandler() {
+    return new DefaultResponseErrorHandler() {
+      protected boolean hasError(HttpStatus statusCode) {
+        if (statusCode == HttpStatus.GONE) {
+          return false;
+        }
+        return (statusCode.series() == HttpStatus.Series.CLIENT_ERROR ||
+                statusCode.series() == HttpStatus.Series.SERVER_ERROR);
+      }};
+  }
+
+  @Bean
+  public RestTemplate restTemplate(ResponseErrorHandler responseHandler) {
+    RestTemplate template = new RestTemplate();
+    template.setErrorHandler(responseHandler);
+    return template;
+  }
+
+  @Bean
   @Profile({"cloud", "default"})
-  public H2oProvisionerRestApi h2oProvisionerRestApi(ExternalConfiguration config) {
-    return new H2oProvisionerRestClient(config.getH2oProvisionerUrl(), new RestTemplate());
+  public H2oProvisionerRestApi h2oProvisionerRestApi(ExternalConfiguration config, RestTemplate restTemplate) {
+    return new H2oProvisionerRestClient(config.getH2oProvisionerUrl(), restTemplate);
   }
 }
