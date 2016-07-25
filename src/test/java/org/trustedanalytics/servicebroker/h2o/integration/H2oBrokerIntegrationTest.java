@@ -140,7 +140,7 @@ public class H2oBrokerIntegrationTest {
   @Test
   public void testDeleteServiceInstance_withoutYarnJob_ShouldReturnRemovedInstance() throws Exception {
     // arrange
-    final String INSTANCE_ID = "instanceId1";
+    final String INSTANCE_ID = "instanceId2";
     when(h2oProvisionerRestApi.createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(),
             conf.getH2oMapperMemory(), true, yarnConfig))
             .thenReturn(new ResponseEntity<>(CREDENTIALS, HttpStatus.OK));
@@ -162,8 +162,8 @@ public class H2oBrokerIntegrationTest {
   @Test
   public void testCreateInstanceAndBinding_success_shouldReturnCredentialsMap() throws Exception {
     // arrange
-    final String INSTANCE_ID = "instanceId2";
-    final String BINDING_ID = "bindingId2";
+    final String INSTANCE_ID = "instanceId3";
+    final String BINDING_ID = "bindingId3";
     when(h2oProvisionerRestApi.createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(),
         conf.getH2oMapperMemory(), true, yarnConfig))
             .thenReturn(new ResponseEntity<>(CREDENTIALS, HttpStatus.OK));
@@ -188,8 +188,8 @@ public class H2oBrokerIntegrationTest {
   @Test
   public void testDeleteServiceBinding_success_shouldReturnRemovedInstance() throws Exception {
     // arrange
-    final String INSTANCE_ID = "instanceId3";
-    final String BINDING_ID = "bindingId3";
+    final String INSTANCE_ID = "instanceId4";
+    final String BINDING_ID = "bindingId4";
     when(h2oProvisionerRestApi.createH2oInstance(INSTANCE_ID, conf.getH2oMapperNodes(),
         conf.getH2oMapperMemory(), true, yarnConfig))
             .thenReturn(new ResponseEntity<>(CREDENTIALS, HttpStatus.OK));

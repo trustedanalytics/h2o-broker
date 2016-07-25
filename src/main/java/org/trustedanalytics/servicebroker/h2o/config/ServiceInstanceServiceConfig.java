@@ -14,6 +14,9 @@
 
 package org.trustedanalytics.servicebroker.h2o.config;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +31,7 @@ import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceServiceStore;
 import org.trustedanalytics.hadoop.config.ConfigurationHelper;
 import org.trustedanalytics.hadoop.config.ConfigurationHelperImpl;
 import org.trustedanalytics.hadoop.config.ConfigurationLocator;
+import org.trustedanalytics.servicebroker.h2o.nats.NatsNotifier;
 import org.trustedanalytics.servicebroker.h2o.service.H2oProvisioner;
 import org.trustedanalytics.servicebroker.h2o.service.H2oProvisionerClient;
 import org.trustedanalytics.servicebroker.h2o.service.H2oServiceInstanceService;
@@ -35,18 +39,17 @@ import org.trustedanalytics.servicebroker.h2oprovisioner.rest.api.H2oCredentials
 import org.trustedanalytics.servicebroker.h2oprovisioner.rest.api.H2oProvisionerRestApi;
 import org.trustedanalytics.servicebroker.h2oprovisioner.rest.api.H2oProvisionerRestClient;
 
-import java.io.IOException;
-import java.util.Map;
-
 @Configuration
 public class ServiceInstanceServiceConfig {
 
   @Bean
   public ServiceInstanceService getServiceInstanceService(
       BrokerStore<ServiceInstance> serviceInstanceStore, H2oProvisioner h2oProvisioner,
-      BrokerStore<H2oCredentials> credentialsStore) {
+      BrokerStore<H2oCredentials> credentialsStore, NatsNotifier natsNotifier,
+      ExternalConfiguration config) {
     return new H2oServiceInstanceService(new ServiceInstanceServiceStore(serviceInstanceStore),
-        h2oProvisioner, credentialsStore);
+        h2oProvisioner, credentialsStore, natsNotifier,
+        Long.valueOf(config.getProvisionerTimeout()));
   }
 
   @Bean
@@ -65,13 +68,15 @@ public class ServiceInstanceServiceConfig {
   @Bean
   public ResponseErrorHandler responseHandler() {
     return new DefaultResponseErrorHandler() {
+      @Override
       protected boolean hasError(HttpStatus statusCode) {
         if (statusCode == HttpStatus.GONE) {
           return false;
         }
-        return (statusCode.series() == HttpStatus.Series.CLIENT_ERROR ||
-                statusCode.series() == HttpStatus.Series.SERVER_ERROR);
-      }};
+        return statusCode.series() == HttpStatus.Series.CLIENT_ERROR
+            || statusCode.series() == HttpStatus.Series.SERVER_ERROR;
+      }
+    };
   }
 
   @Bean
@@ -83,7 +88,8 @@ public class ServiceInstanceServiceConfig {
 
   @Bean
   @Profile({"cloud", "default"})
-  public H2oProvisionerRestApi h2oProvisionerRestApi(ExternalConfiguration config, RestTemplate restTemplate) {
+  public H2oProvisionerRestApi h2oProvisionerRestApi(ExternalConfiguration config,
+      RestTemplate restTemplate) {
     return new H2oProvisionerRestClient(config.getH2oProvisionerUrl(), restTemplate);
   }
 }

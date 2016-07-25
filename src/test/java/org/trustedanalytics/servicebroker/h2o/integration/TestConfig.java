@@ -14,6 +14,10 @@
 
 package org.trustedanalytics.servicebroker.h2o.integration;
 
+import static org.mockito.Mockito.mock;
+
+import java.io.IOException;
+
 import org.apache.curator.test.TestingServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,11 +26,11 @@ import org.springframework.context.annotation.Profile;
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClientBuilder;
 import org.trustedanalytics.servicebroker.h2o.config.ExternalConfiguration;
+import org.trustedanalytics.servicebroker.h2o.nats.NatsMessageBuilder;
+import org.trustedanalytics.servicebroker.h2o.nats.NatsNotifier;
 import org.trustedanalytics.servicebroker.h2oprovisioner.rest.api.H2oProvisionerRestApi;
 
-import java.io.IOException;
-
-import static org.mockito.Mockito.mock;
+import nats.client.Nats;
 
 @Configuration
 @Profile("test")
@@ -61,5 +65,20 @@ public class TestConfig {
   @Bean
   public boolean isKerberosEnabled() {
     return true;
+  }
+ 
+  @Bean
+  public Nats natsClient(ExternalConfiguration config) {
+    return mock(Nats.class);
+  }
+
+  @Bean
+  public String natsServiceCreationTopic(ExternalConfiguration config) {
+    return config.getNatsServiceCreationTopic();
+  }
+  
+  @Bean
+  public NatsNotifier natsNotifier(Nats natsClient, String natsServiceCreationTopic) {
+    return new NatsNotifier(natsClient, natsServiceCreationTopic, new NatsMessageBuilder());
   }
 }

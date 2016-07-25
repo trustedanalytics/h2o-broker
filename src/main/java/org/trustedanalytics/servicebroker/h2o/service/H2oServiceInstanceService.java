@@ -14,6 +14,15 @@
 
 package org.trustedanalytics.servicebroker.h2o.service;
 
+import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.cloudfoundry.community.servicebroker.exception.ServiceBrokerException;
 import org.cloudfoundry.community.servicebroker.exception.ServiceInstanceExistsException;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceRequest;
@@ -25,21 +34,26 @@ import org.slf4j.LoggerFactory;
 import org.trustedanalytics.cfbroker.store.api.BrokerStore;
 import org.trustedanalytics.cfbroker.store.api.Location;
 import org.trustedanalytics.cfbroker.store.impl.ForwardingServiceInstanceServiceStore;
+import org.trustedanalytics.servicebroker.h2o.nats.NatsNotifier;
+import org.trustedanalytics.servicebroker.h2o.nats.ServiceMetadata;
 import org.trustedanalytics.servicebroker.h2oprovisioner.rest.api.H2oCredentials;
-
-import java.io.IOException;
 
 public class H2oServiceInstanceService extends ForwardingServiceInstanceServiceStore {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(H2oServiceInstanceService.class);
+  private final long provisionerTimeout;
   private final H2oProvisioner h2oProvisioner;
   private final BrokerStore<H2oCredentials> credentialsStore;
+  private final NatsNotifier natsNotifier;
 
   public H2oServiceInstanceService(ServiceInstanceService delegate, H2oProvisioner h2oProvisioner,
-      BrokerStore<H2oCredentials> credentialsStore) {
+      BrokerStore<H2oCredentials> credentialsStore, NatsNotifier natsNotifier,
+      long provisionerTimeout) {
     super(delegate);
     this.h2oProvisioner = h2oProvisioner;
     this.credentialsStore = credentialsStore;
+    this.natsNotifier = natsNotifier;
+    this.provisionerTimeout = provisionerTimeout;
   }
 
   @Override
@@ -48,9 +62,33 @@ public class H2oServiceInstanceService extends ForwardingServiceInstanceServiceS
 
     ServiceInstance serviceInstance = super.createServiceInstance(request);
     String instanceId = serviceInstance.getServiceInstanceId();
+    // if name not provided use instanceId instead
+    String instanceName =
+        (String) Optional.ofNullable(request.getParameters().get("name")).orElse(instanceId);
 
-    new Thread(new ProvisioningJob(h2oProvisioner, credentialsStore, instanceId)).start();
+    ServiceMetadata service =
+        new ServiceMetadata(instanceId, instanceName, serviceInstance.getOrganizationGuid());
+    natsNotifier.notifyServiceCreationStarted(service);
 
+    ProvisioningResult provisioningResult = provisionH2o(instanceId);
+
+    switch (provisioningResult.getStatus()) {
+      case SUCCESS:
+        natsNotifier.notifyServiceCreationSucceeded(service);
+        break;
+      case ERROR:
+        natsNotifier.notifyServiceCreationStatus(service, "Creating h2o server " + service.getName()
+            + " failed. See h2o-broker logs for more information.");
+        logAndRethrow(createErrorMessage(service.getId()), provisioningResult.getException());
+        break;
+      case TIMEOUT:
+        String timeoutMessage = createTimeoutMessage(service.getName());
+        natsNotifier.notifyServiceCreationStatus(service, timeoutMessage);
+        logAndRethrow(timeoutMessage, provisioningResult.getException());
+        break;
+      default:
+        break;
+    }
     return serviceInstance;
   }
 
@@ -58,11 +96,47 @@ public class H2oServiceInstanceService extends ForwardingServiceInstanceServiceS
   public ServiceInstance deleteServiceInstance(DeleteServiceInstanceRequest request)
       throws ServiceBrokerException {
     ServiceInstance serviceInstance = super.deleteServiceInstance(request);
+    if (serviceInstance == null) {
+      LOGGER.warn(
+          "Got delete request for non-existing service instance " + request.getServiceInstanceId());
+      return null;
+    }
+
     String serviceInstanceId = serviceInstance.getServiceInstanceId();
 
     String killedJob = h2oProvisioner.deprovisionInstance(serviceInstanceId);
     LOGGER.info("Killed YARN job: " + killedJob + " for H2O instance " + serviceInstanceId);
     return serviceInstance;
+  }
+
+  private ProvisioningResult provisionH2o(String instanceId) {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    FutureTask<Object> task =
+        new FutureTask<>(new ProvisioningJob(h2oProvisioner, credentialsStore, instanceId), null);
+    executor.execute(task);
+
+    try {
+      task.get(provisionerTimeout, TimeUnit.SECONDS);
+      return new ProvisioningResult(ProvisioningStatus.SUCCESS);
+    } catch (InterruptedException | ExecutionException e) {
+      return new ProvisioningResult(ProvisioningStatus.ERROR, e);
+    } catch (TimeoutException e) {
+      return new ProvisioningResult(ProvisioningStatus.TIMEOUT, e);
+    }
+  }
+
+  private void logAndRethrow(String message, Exception exception) throws ServiceBrokerException {
+    LOGGER.error(message, exception);
+    throw new ServiceBrokerException(message, exception);
+  }
+
+  private String createErrorMessage(String serviceId) {
+    return "Unable to provision h2o for " + serviceId + ": ";
+  }
+
+  private String createTimeoutMessage(String serviceName) {
+    return "H2o instance " + serviceName + " hasn't been started in " + provisionerTimeout
+        + " seconds. There may not be enough YARN resources available.";
   }
 
   private static class ProvisioningJob implements Runnable {
@@ -83,31 +157,17 @@ public class H2oServiceInstanceService extends ForwardingServiceInstanceServiceS
     public void run() {
       try {
         H2oCredentials credentials = h2oProvisioner.provisionInstance(instanceId);
+
         saveCredentials(credentials);
         LOGGER.info("Created h2o instance with address '" + credentials.getHostname() + ":"
             + credentials.getPort() + "'");
-
-      } catch (ServiceBrokerException e) {
-        logError(e);
-
-        // TODO: this (exception muting) will change after upgrading
-        // to 2.7 Broker API which can deal with creating instances asynchronously
+      } catch (IOException | ServiceBrokerException e) {
+        throw new RuntimeException(e);
       }
     }
 
-    private void saveCredentials(H2oCredentials credentials) {
-      try {
-        credentialsStore.save(Location.newInstance(instanceId), credentials);
-      } catch (IOException e) {
-        logError(e);
-
-        // TODO: this (exception muting) will change after upgrading
-        // to 2.7 Broker API which can deal with creating instances asynchronously
-      }
-    }
-
-    private void logError(Exception e) {
-      LOGGER.error("Unable to create h2o instance for '" + instanceId + "'", e);
+    private void saveCredentials(H2oCredentials credentials) throws IOException {
+      credentialsStore.save(Location.newInstance(instanceId), credentials);
     }
   }
 }

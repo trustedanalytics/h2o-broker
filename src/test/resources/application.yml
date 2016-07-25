@@ -11,8 +11,13 @@ h2o:
     url: fakeUrl
     memory: fakeMemory
     nodes: fakeNodes
+    timeout: 2
 
 yarn.config: '{"HADOOP_CONFIG_KEY":{}}'
+
+nats:
+  url: fakeUrl
+  serviceCreationTopic: fakeTopic
 
 cf:
   servicename: fakeName

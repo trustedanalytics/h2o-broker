@@ -14,13 +14,19 @@
 
 package org.trustedanalytics.servicebroker.h2o.service;
 
+import java.util.Map;
+
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceRequest;
+import org.cloudfoundry.community.servicebroker.model.DeleteServiceInstanceRequest;
+
+import com.google.common.collect.ImmutableMap;
 
 public class CfBrokerRequestsFactory {
   public static CreateServiceInstanceRequest getCreateInstanceRequest(String serviceInstanceId) {
+    Map<String, Object> createInstanceParams = ImmutableMap.of("name", "test-service-name");
     return new CreateServiceInstanceRequest("serviceDefinitionId", "planId", "organizationGuid",
-        "spaceGuid").withServiceInstanceId(serviceInstanceId);
+        "spaceGuid", createInstanceParams).withServiceInstanceId(serviceInstanceId);
   }
 
   public static CreateServiceInstanceBindingRequest getCreateServiceBindingRequest(
@@ -29,5 +35,10 @@ public class CfBrokerRequestsFactory {
     return new CreateServiceInstanceBindingRequest(
         getCreateInstanceRequest(instanceId).getServiceDefinitionId(), "planId", "appGuid")
             .withBindingId(bindingId).withServiceInstanceId(instanceId);
+  }
+
+  public static DeleteServiceInstanceRequest getDeleteServiceInstanceRequest(
+      String serviceInstanceId) {
+    return new DeleteServiceInstanceRequest(serviceInstanceId, "serviceId", "planId");
   }
 }

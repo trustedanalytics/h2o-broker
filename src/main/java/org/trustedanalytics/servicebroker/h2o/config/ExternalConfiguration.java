@@ -58,6 +58,10 @@ public class ExternalConfiguration {
   @Value("${h2o.provisioner.nodes}")
   @NotNull
   private String h2oMapperNodes;
+  
+  @Value("${h2o.provisioner.timeout}")
+  @NotNull
+  private String provisionerTimeout;
 
   @Value("${metadata.imageUrl}")
   @NotNull
@@ -66,4 +70,12 @@ public class ExternalConfiguration {
   @Value("${yarn.config}")
   @NotNull
   private String yarnConfig;
+  
+  @Value("${nats.url}")
+  @NotNull
+  private String natsUrl;
+  
+  @Value("${nats.serviceCreationTopic}")
+  @NotNull
+  private String natsServiceCreationTopic;
 }

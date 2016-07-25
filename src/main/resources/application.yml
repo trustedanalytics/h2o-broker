@@ -11,8 +11,13 @@ h2o:
     url: ${vcap.services.h2o-provisioner.credentials.url}
     memory: ${MAPPER_MEMORY:512m}
     nodes: ${MAPPER_NODES:1}
+    timeout: ${PROVISIONER_TIMEOUT_SECONDS:120}
 
 yarn.config: ${VCAP_SERVICES}
+
+nats:
+  url: ${vcap.services.nats-provider.credentials.url}
+  serviceCreationTopic: ${vcap.services.nats-provider.credentials.service-creation-subject}
 
 cf:
   #name of service in cloud foundry catalog
